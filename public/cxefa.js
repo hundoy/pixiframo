@@ -1,30 +1,29 @@
 // init app
-var app = new PIXI.Application(960,600, {backgroundColor:0xffffff0});
+let app = new PIXI.Application(960,600, {backgroundColor:0xffffff0});
 document.body.appendChild(app.view);
 
 // Scale mode for all textures, will retain pixelation
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 // load src
-PIXI.loader.add('curscript', 'scripts/test.sn')
-    .on("process", onLoading)
-    .load(onLoaded);
+PIXI.loader.add('curscript', 'scripts/komenco.sn')
+    // .on("process", onLoading)
+    .load(scriptProcess);
+
+function scriptProcess(loader, res){
+    basicText.text = res.curscript.data;
+}
 
 // text
 var basicText = new PIXI.Text('Basic text in pixi');
 basicText.x = 30;
 basicText.y = 90;
 
-function onLoading(loader, res){
-    console.log("loading"+res.url);
-    console.log("loading process"+loader.process+"%");
-    basicText.text = "loading...";
-}
-
-// after load, change the text
-function onLoaded(loader, res){
-    basicText.text = res.script1.data;
-}
+// function onLoading(loader, res){
+//     console.log("loading"+res.url);
+//     console.log("loading process"+loader.process+"%");
+//     basicText.text = "loading...";
+// }
 
 app.stage.addChild(basicText);
 
@@ -47,8 +46,8 @@ var style = new PIXI.TextStyle({
 
 app.ticker.add(function(delta) {
     // console.log(delta*app.ticker.minFPS);
-    bunny.rotation += Math.PI * delta/app.ticker.FPS;
-    app.renderer.render(ctn, rt);
+    // bunny.rotation += Math.PI * delta/app.ticker.FPS;
+    // app.renderer.render(ctn, rt);
 });
 
 
