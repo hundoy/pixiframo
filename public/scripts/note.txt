@@ -1,0 +1,79 @@
+// gray vertex shader
+
+uniform mat4 u_projTrans;
+
+attribute vec4 a_position;
+attribute vec2 a_texCoord0;
+attribute vec4 a_color;
+
+varying vec4 v_color;
+varying vec2 v_texCoord;
+
+void main() {
+    gl_Position = u_projTrans * a_position; //需要把2D坐标变换成3D空间坐标才能使用，输出到gl_Position
+    v_texCoord = a_texCoord0; // 其他两个变量直接传递到fragment中
+    v_color = a_color;
+}
+
+// gray fragment shader
+
+#ifdef GL_ES  //指定浮点和整数的精度，如果ES（手机）就用中精度，否则（PC）用高精度
+precision mediump float;
+precision mediump int;
+#else
+#define highp;
+#endif
+
+uniform sampler2D u_texture;
+
+varying vec4 v_color;
+varying vec2 v_texCoord;
+
+const vec3 grayScaleMultiplier = vec3(0.299, 0.587, 0.114); // 一般变灰效果里的一个最优RGB权值
+
+void main() {
+vec4 texColor = texture2D(u_texture, v_texCoord); // 采样器方法texture2D，根据坐标值v_texCoord从u_texture材质上采到对应的颜色，存成vec4
+vec3 gray = vec3(dot(texColor.rgb, grayScaleMultiplier)); // 材质颜色和变灰权值点乘，得到最终色
+    gl_FragColor = vec4(gray.r, gray.g, gray.b, texColor.a); // 保持原透明度不变，其他是变灰后的颜色，输出给gl_FragColor
+}
+
+常见的类型：
+float浮点数 int整数
+vec2 vec3 vec4 二三四元向量
+vec2i vec3i vec4i 二三四元向量，元素是整数
+sampler2D材质
+内置函数
+float length(vec) 获取一个向量的弦长
+float step(edge, x) x<edge ? 0.0 : 1.0
+float smoothstep(low, high, x) xhigh ? 1.0 : smoothvalue) low和high调换的话，可以得到反相的效果
+float mix(x, y, a) 以a的比例 ，将y的值混入x
+matrix dot(matrix1, matrix2) 将矩阵点乘
+声明和赋值：
+vec3=vec3(1.0)，一次声明三个元素
+vec3=vec3(c,1.0)，c是一个vec2，用vec2加一个元素生成vec3 
+读写向量元素时，可以用rgba,xyzw,stpq，还可以用下标[0]-[3]
+
+// dark fragment shader
+
+uniform sampler2D u_texture;
+
+varying vec4 v_color;
+varying vec2 v_texCoord;
+
+uniform vec2 resolution;
+uniform float radius;
+
+const float SOFTNESS = 0.2;
+const float VIGNETTE_OPACITY = 0.9;
+
+void main() {
+    vec4 texColor = texture2D(u_texture, v_texCoord);
+    vec2 position = (gl_FragCoord.xy / resolution.xy) - vec2(0.5); // 坐标以0-1形式表示，计算出当前象素点指向中心点的向量
+    position.x *= resolution.x / resolution.y; // 将X坐标变换一下，让它与Y坐标等长，使画出的圆是正圆
+    float len = length(position); // 用length()取到向量模，即当前象素到画面中心的距离
+    float vignette = smoothstep(radius, radius-SOFTNESS, len); // smoothstep取到0－1之间的一个数，第一参数是下限，实际值小于它则取0，第二参数是上限，实际值大于它则取1，第三参数是实际值，在前两参数之间的话，会返回一个0-1的小数，代表它所占的比例位置（用一种叫三次Hermite插值的算法）
+    texColor.rgb = mix(texColor.rgb, texColor.rgb * vignette, VIGNETTE_OPACITY); // 第三个参数是比率，以此比率取一个介于第一参数和第二参数之间的数
+    gl_FragColor = vec4(texColor.r, texColor.g, texColor.b, texColor.a);
+}
+
+

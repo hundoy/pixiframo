@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Emmmm</title>
+  <style>* {padding: 0; margin: 0}</style>
+</head>
+  <script src="pixi.min.js"></script>
+<body>
+  <script type="text/javascript">
+    // alias
+    var Cache = PIXI.utils.TextureCache;
+    var Sprite = PIXI.Sprite;
+    var Rect = PIXI.Rectangle;
+    var Container = PIXI.Container;
+    var Text = PIXI.Text;
+  
+    // state
+    var state = play;
+
+    var renderer = PIXI.autoDetectRenderer(256,256,
+            {antialias: false, transparent: false, resolution: 1});
+    //renderer.view.style.border = "1px dashed black";
+    
+    
+    // fill web screen( make sure all the border and padding is 0. )
+    renderer.view.style.position = "absolute";
+    renderer.view.style.display = "block";
+    renderer.backgroundColor = 0xfffff0;
+    renderer.autoResize = true;
+    renderer.resize(window.innerWidth, window.innerHeight);
+    
+    document.body.appendChild(renderer.view);
+    var stage = new PIXI.Container();
+    var rocket;
+    var cof1;
+        
+    PIXI.loader
+        .add([
+            "images/1.png",
+            "images/2.png",
+            "images/3.png",
+            "images/09.png"
+        ]).load(setup);
+
+    function keyboard(keyCode){
+        var key = {};
+        key.code = keyCode;
+        key.isDown = false;
+        key.isUp = true;
+        key.press = undefined;
+        key.release = undefined;
+        key.downHandler = function(event){
+            if (event.keyCode == key.code){
+                if (key.isUp && key.press) key.press();
+                key.isDown = true;
+                key.isUp = false;
+            }
+            event.preventDefault();
+        };
+        key.upHandler = function(event){
+            if (event.keyCode == key.code){
+                if (key.isDown && key.release) key.release();
+                key.isDown = false;
+                key.isUp = true;
+            }
+            event.preventDefault();
+        };
+
+        window.addEventListener(
+                "keydown", key.downHandler.bind(key), false
+        );
+        window.addEventListener(
+                "keyup", key.upHandler.bind(key), false
+        );
+        return key;
+    }
+
+    function setup(){
+        /*
+        var type = "WebGL"
+        if(!PIXI.utils.isWebGLSupported()){
+          type = "canvas"
+        }
+
+        PIXI.utils.sayHello(type)
+        */
+        //var tex = PIXI.utils.TextureCache["images/coffee1.png"];
+        //var spt = new PIXI.Sprite(tex);
+        cof1 = new PIXI.Sprite(PIXI.loader.resources["images/1.png"].texture);
+        var tilesetTex = Cache["images/09.png"];
+        var tilesetTex2 = Cache["images/09.png"];
+        tilesetTex.frame = new Rect(3*32,2*32,32,32);
+        rocket = new Sprite(tilesetTex);
+        rocket.position.set(32,32);
+        var cont = new Container();
+
+        //cof1.x=96;
+        //cof1.y=96;
+        cof1.position.set(120,120);
+        cof1.vx=0;
+        cof1.vy=0;
+        //cof1.width=60;
+        //cof1.height=100;
+        //cof1.scale.set(0.5,0.2);
+        
+        //cof1.anchor.set(0.5,0.5);
+        //cof1.rotation=Math.PI;
+
+        var message = new Text(
+                "111",
+                {fontFamily:"SimHei", fontSize:36, fill:"black"}
+        );
+        message.position.set(80,80);
+        stage.addChild(message);
+        
+        cont.addChild(cof1);
+        cont.addChild(rocket);
+        cont.alpha = 0.1;
+        stage.addChild(cont);
+        
+        var left = keyboard(37),
+            up = keyboard(38),
+            right = keyboard(39),
+            down = keyboard(40);
+
+        left.press = function(){
+            cof1.vx = -5;
+            cof1.vy = 0;
+        }
+        left.release = function(){
+            if (!right.isDown && cof1.vy === 0){
+                cof1.vx = 0;
+            }
+        }
+        up.press = function() {
+            cof1.vy = -5;
+            cof1.vx = 0;
+        };
+        up.release = function() {
+            if (!down.isDown && cof1.vx === 0) {
+                cof1.vy = 0;
+            }
+        };
+        right.press = function() {
+            cof1.vx = 5;
+            cof1.vy = 0;
+        };
+        right.release = function() {
+            if (!left.isDown && cof1.vy === 0) {
+                cof1.vx = 0;
+            }
+        };
+        down.press = function() {
+            cof1.vy = 5;
+            cof1.vx = 0;
+        };
+        down.release = function() {
+            if (!up.isDown && cof1.vx === 0) {
+                cof1.vy = 0;
+            }
+        };
+
+        gloop();
+    }
+
+
+    function gloop(){
+        requestAnimationFrame(gloop);
+        
+        state();
+        
+        renderer.render(stage);
+    }
+
+
+    function play(){
+        cof1.x += cof1.vx;
+        cof1.y += cof1.vy;
+//        cof1.x += 1;
+//        cof1.y += 1;
+    }
+
+  </script>
+</body>
+</html>
