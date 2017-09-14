@@ -1,6 +1,15 @@
 'use strict'
 
-require(['scenarilo'],function(scenarilo){
+require.config({
+    paths:{
+        "scenarilo":"scenarilo"
+    }
+});
+
+require(["scenarilo","cmd_bg"],function(scenarilo, cmd_bg){
+    let cmds={
+        "bg": cmd_bg
+    };
     // // import
     // let scenarilo = new Scenarilo();
 
@@ -11,9 +20,11 @@ require(['scenarilo'],function(scenarilo){
     // Scale mode for all textures, will retain pixelation
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
-
     // global varaibles
     let curscriptData = null;
+    let script_i = 0;
+    let curLabel = "";
+    let text_i = 0;
 
     // load src
     PIXI.loader.add('curscript', 'scripts/komenco.sn')
@@ -61,6 +72,16 @@ require(['scenarilo'],function(scenarilo){
         // console.log(delta*app.ticker.minFPS);
         // bunny.rotation += Math.PI * delta/app.ticker.FPS;
         // app.renderer.render(ctn, rt);
+        if (curscriptData){
+            while(true){
+                let curLine = curscriptData.lines[script_i];
+                let cmd = cmd[curLine.cmd];
+                cmd.process(curLine);
+                // if not end, stop script loop and jump to next frame.
+                if (!cmd.isEnd()) break;
+                script_i+=1;
+            }
+        }
     });
 });
 

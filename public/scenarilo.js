@@ -74,5 +74,4 @@ define(function(){
     return {
         analyze: analyze
     };
-
 });
