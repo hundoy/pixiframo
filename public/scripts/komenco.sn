@@ -11,9 +11,8 @@ hd jv
 hd ld
 wait 2
 
-#cafe|
+#cafe
 bg cafe
 lh jv pos=la f=smile
 lh ld pos=ra f=nm
 jav: change bg.
-
