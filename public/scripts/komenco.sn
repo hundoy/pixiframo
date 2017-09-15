@@ -1,5 +1,11 @@
 #open|open scene of this
 bg room
+wait click
+bg class
+wait 120
+bg room
+wait
+
 lh jv pos=la f=smile
 jav: This is a test for something new... emmmm
 lh ld pos=ra f=nm

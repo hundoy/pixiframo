@@ -6,9 +6,10 @@ require.config({
     }
 });
 
-require(["scenarilo","cmd_bg"],function(scenarilo, cmd_bg){
+require(["scenarilo","cmd_bg","cmd_wait"],function(scenarilo, cmd_bg, cmd_wait){
     let cmds={
-        "bg": cmd_bg
+        "bg": cmd_bg,
+        "wait": cmd_wait
     };
     // // import
     // let scenarilo = new Scenarilo();
@@ -21,21 +22,37 @@ require(["scenarilo","cmd_bg"],function(scenarilo, cmd_bg){
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
     // global varaibles
-    let curscriptData = null;
-    let script_i = 0;
-    let curLabel = "";
-    let text_i = 0;
+    let dat = {
+        res:{bg:{},fg:{},sound:{},sys:{}},
+        curscriptData: null,
+        script_i: 0,
+        curLabel: "",
+        text_i: 0,
+        curLine: null,
+        startWaitTime: 0,
+        waitTime: 0,
+        waitType: ""
+    };
 
     // load src
     PIXI.loader.add('curscript', 'scripts/komenco.sn')
+        .add(["bg/bg_room.png","bg/bg_class.png"])
     // .on("process", onLoading)
-        .load(scriptProcess);
+        .load(afterLoad);
 
-    function scriptProcess(loader, res){
-        //basicText.text = res.curscript.data;
-        curscriptData = scenarilo.analyze(res.curscript.data);
+    function afterLoad(loader, res){
         //basicText.text = JSON.stringify(scriptData);
-        console.log(JSON.stringify(scriptData));
+        console.log(JSON.stringify(dat.curscriptData));
+
+        let bgreg = /^bg\/bg_([^.]+)\..*$/
+        for (let url in res){
+            if (bgreg.test(url)){
+                let rs = bgreg.exec(url);
+                dat.res.bg[rs[1]] = url;
+            }
+        }
+
+        dat.curscriptData = scenarilo.analyze(res.curscript.data);
     }
 
     // text
@@ -72,16 +89,26 @@ require(["scenarilo","cmd_bg"],function(scenarilo, cmd_bg){
         // console.log(delta*app.ticker.minFPS);
         // bunny.rotation += Math.PI * delta/app.ticker.FPS;
         // app.renderer.render(ctn, rt);
-        if (curscriptData){
+
+        if (dat.waitTime)
+
+        // script process
+        if (dat.curscriptData){
             while(true){
-                let curLine = curscriptData.lines[script_i];
-                let cmd = cmd[curLine.cmd];
-                cmd.process(curLine);
-                // if not end, stop script loop and jump to next frame.
-                if (!cmd.isEnd()) break;
-                script_i+=1;
+                dat.curLine = dat.curscriptData.lines[dat.script_i];
+                if (dat.curLine.cmd in cmds){
+                    let cmd = cmds[dat.curLine.cmd];
+
+                    // cmd do two jobs: 1. pixi app work. 2.record current data.
+                    cmd.process(app, dat);
+
+                    // if process is not end, stop script loop and jump to next frame.
+                    if (!cmd.isEnd()) break;
+                }
+                dat.script_i+=1;
             }
         }
+
     });
 });
 
