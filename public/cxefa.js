@@ -90,22 +90,31 @@ require(["scenarilo","cmd_bg","cmd_wait"],function(scenarilo, cmd_bg, cmd_wait){
         // bunny.rotation += Math.PI * delta/app.ticker.FPS;
         // app.renderer.render(ctn, rt);
 
-        if (dat.waitTime)
+        if (dat.waitType=="time"){
+            if (dat.waitTime<=0){
+                dat.waitType = "";
+                dat.waitTime = 0;
+            } else {
+                dat.waitTime-=delta;
+            }
+        } else if (dat.waitType=="click" || dat.waitType=="forever"){
+            // do nothing
+        } else {
+            // script process
+            if (dat.curscriptData){
+                while(true){
+                    dat.curLine = dat.curscriptData.lines[dat.script_i];
+                    if (dat.curLine.cmd in cmds){
+                        let cmd = cmds[dat.curLine.cmd];
 
-        // script process
-        if (dat.curscriptData){
-            while(true){
-                dat.curLine = dat.curscriptData.lines[dat.script_i];
-                if (dat.curLine.cmd in cmds){
-                    let cmd = cmds[dat.curLine.cmd];
+                        // cmd do two jobs: 1. pixi app work. 2.record current data.
+                        cmd.process(app, dat);
 
-                    // cmd do two jobs: 1. pixi app work. 2.record current data.
-                    cmd.process(app, dat);
-
-                    // if process is not end, stop script loop and jump to next frame.
-                    if (!cmd.isEnd()) break;
+                        // if process is not end, stop script loop and jump to next frame.
+                        if (!cmd.isEnd(app, dat)) break;
+                    }
+                    dat.script_i+=1;
                 }
-                dat.script_i+=1;
             }
         }
 
