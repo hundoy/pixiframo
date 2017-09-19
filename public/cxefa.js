@@ -6,16 +6,17 @@ require.config({
     }
 });
 
-require(["scenarilo","cmd_bg","cmd_wait"],function(scenarilo, cmd_bg, cmd_wait){
+require(["scenarilo","cmd_bg","cmd_lh","cmd_wait"],function(scenarilo, cmd_bg, cmd_lh, cmd_wait){
     let cmds={
         "bg": cmd_bg,
-        "wait": cmd_wait
+        "wait": cmd_wait,
+        "lh": cmd_lh
     };
     // // import
     // let scenarilo = new Scenarilo();
 
     // init app
-    let app = new PIXI.Application(960,600, {backgroundColor:0xffffff0});
+    let app = new PIXI.Application(1280,720, {backgroundColor:0xffffff0});
     document.body.appendChild(app.view);
 
     // Scale mode for all textures, will retain pixelation
@@ -31,12 +32,16 @@ require(["scenarilo","cmd_bg","cmd_wait"],function(scenarilo, cmd_bg, cmd_wait){
         curLine: null,
         startWaitTime: 0,
         waitTime: 0,
-        waitType: ""
+        waitType: "",
+        // gel: game elements, they are objects on game displaying or playing.
+        gel: {bg:{}, fg:{}, bgm:{}, se:{}},
+        ctn: {base:null, bg:null, fg:null, msg:null}
     };
 
     // load src
     PIXI.loader.add('curscript', 'scripts/komenco.sn')
-        .add(["bg/bg_room.png","bg/bg_class.png"])
+        .add(["bg/bg_1.png","bg/bg_2.png","bg/bg_7home.jpg","bg/bg_alleynight.jpg","bg/bg_office.jpg"])
+        .add(["fg/lh_1.png","fg/lh_2.png","fg/lh_nd.png","fg/lh_gg.png","fg/lh_ai.png"])
     // .on("process", onLoading)
         .load(afterLoad);
 
@@ -49,6 +54,14 @@ require(["scenarilo","cmd_bg","cmd_wait"],function(scenarilo, cmd_bg, cmd_wait){
             if (bgreg.test(url)){
                 let rs = bgreg.exec(url);
                 dat.res.bg[rs[1]] = url;
+            }
+        }
+
+        let fgreg = /^fg\/lh_([^.]+)\..*$/
+        for (let url in res){
+            if (fgreg.test(url)){
+                let rs = fgreg.exec(url);
+                dat.res.fg[rs[1]] = url;
             }
         }
 
@@ -67,6 +80,30 @@ require(["scenarilo","cmd_bg","cmd_wait"],function(scenarilo, cmd_bg, cmd_wait){
     // }
 
     app.stage.addChild(basicText);
+
+    app.stage.interactive = true;
+    app.stage.on("pointertap", tapEvent);
+    app.stage.on("tap", tapEvent);
+
+    function tapEvent(event){
+        // let pos = event.data.global;
+        // console.log(pos.x);
+        // console.log(pos.y);
+        if (dat.waitType=="click"){
+            dat.waitType = "";
+            dat.script_i+=1;
+        }
+    }
+
+    // containers define
+    dat.ctn.base = new PIXI.Container();
+    app.stage.addChild(dat.ctn.base);
+    dat.ctn.bg = new PIXI.Container();
+    dat.ctn.base.addChild(dat.ctn.bg);
+    dat.ctn.fg = new PIXI.Container();
+    dat.ctn.base.addChild(dat.ctn.fg);
+    dat.ctn.msg = new PIXI.Container();
+    dat.ctn.base.addChild(dat.ctn.msg);
 
     var style = new PIXI.TextStyle({
         fontFamily: 'Arial',
@@ -94,6 +131,7 @@ require(["scenarilo","cmd_bg","cmd_wait"],function(scenarilo, cmd_bg, cmd_wait){
             if (dat.waitTime<=0){
                 dat.waitType = "";
                 dat.waitTime = 0;
+                dat.script_i+=1;
             } else {
                 dat.waitTime-=delta;
             }

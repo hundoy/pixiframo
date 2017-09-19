@@ -1,14 +1,18 @@
 #open|open scene of this
-bg room
+bg office
+lh gg pos=la f=smile
+lh nd pos=ra f=nm
 wait click
-bg class
-wait 120
-bg room
+bg alleynight
+lh gg pos=lb f=smile
+wait 60
+lh nd pos=rb f=nm
+bg 7home
 wait
 
-lh jv pos=la f=smile
+
 jav: This is a test for something new... emmmm
-lh ld pos=ra f=nm
+
 ld: Try to switch character.
 lh jv f=nm
 jav: change the face. without pos.
