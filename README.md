@@ -1,7 +1,7 @@
 # pixiframo
 
 ## todo list
-1.show bg and lh
+1.show bg and lh[FIN]
 
 2.show text and basic text effect
 

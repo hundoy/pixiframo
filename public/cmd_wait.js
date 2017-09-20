@@ -22,8 +22,13 @@ define(function(){
         return false;
     }
 
+    var afterWait = function(app, dat){
+        dat.script_i+=1;
+    }
+
     return {
         process: process,
-        isEnd: isEnd
+        isEnd: isEnd,
+        afterWait: afterWait
     };
 });
