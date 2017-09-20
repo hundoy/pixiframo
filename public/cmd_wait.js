@@ -26,9 +26,15 @@ define(function(){
         dat.script_i+=1;
     }
 
+    var afterClick = function(app, dat){
+        dat.waitType = "";
+        dat.script_i+=1;
+    }
+
     return {
         process: process,
         isEnd: isEnd,
-        afterWait: afterWait
+        afterWait: afterWait,
+        afterClick: afterClick
     };
 });

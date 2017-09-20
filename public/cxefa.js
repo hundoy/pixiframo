@@ -108,8 +108,7 @@ require(["scenarilo","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenarilo
         // console.log(pos.x);
         // console.log(pos.y);
         if (dat.waitType=="click"){
-            dat.waitType = "";
-            dat.script_i+=1;
+            dat.curCmd.afterClick(app, dat);
         }
     }
 
@@ -163,9 +162,7 @@ require(["scenarilo","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenarilo
                 dat.waitTime-=delta;
             }
         } else if (dat.waitType=="click" || dat.waitType=="forever"){
-            if (dat.isText){
-                dat.curCmd.afterWait(app, dat);
-            }
+            
         } else {
             // script process
             if (dat.curscriptData){

@@ -4,6 +4,33 @@ define(function(){
         return dat.text_ti>=dat.textContent.length
     }
 
+    function processAfterWord(app, dat){
+        // after a word display...
+        if (isTextEnd(app, dat)){
+            // if it is already the end, finish this text command.
+            dat.text_si = 0;
+            dat.text_ti = 0;
+            dat.isText = false;
+            dat.textName = "";
+            dat.waitType = "";
+            dat.waitTime = 0;
+
+            dat.textContent = "";
+            dat.script_i+=1;
+        } else{
+            // not the end, continue.
+            dat.text_ti+=1;
+
+            // next is the end, wait click.
+            if (isTextEnd(app, dat)){
+                dat.waitType = "click";
+            } else {
+                dat.waitType = "time";
+                dat.waitTime = dat.textInter;
+            }
+        }
+    }
+
     // methods
     var process = function (app, dat){
         // name: sayer name
@@ -22,29 +49,17 @@ define(function(){
     }
 
     var afterWait = function(app, dat){
-        if (isTextEnd(app, dat)){
-            dat.text_si = 0;
-            dat.text_ti = 0;
-            dat.isText = false;
-            dat.textName = "";
-            dat.textContent = "";
+        processAfterWord(app, dat);
+    }
 
-            dat.script_i+=1;
-        } else{
-            dat.text_ti+=1;
-
-            if (isTextEnd(app, dat)){
-                dat.waitType = "click";
-            } else {
-                dat.waitType = "time";
-                dat.waitTime = dat.textInter;
-            }
-        }
+    var afterClick = function(app, dat){
+        processAfterWord(app, dat);
     }
 
     return {
         process: process,
         isEnd: isEnd,
-        afterWait: afterWait
+        afterWait: afterWait,
+        afterClick: afterClick
     };
 });
