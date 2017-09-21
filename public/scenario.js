@@ -1,4 +1,4 @@
-// scenarilo.js
+// scenario.js
 define(function(){
     // line regexp
     // #label|label desc  [1]-label [3]-label description

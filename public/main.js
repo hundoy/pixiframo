@@ -2,11 +2,11 @@
 
 require.config({
     paths:{
-        "scenarilo":"scenarilo"
+        "scenario":"scenario"
     }
 });
 
-require(["scenarilo","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenarilo, cmd_bg, cmd_lh, cmd_wait, cmd_text){
+require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, cmd_bg, cmd_lh, cmd_wait, cmd_text){
     let cmds={
         "bg": cmd_bg,
         "wait": cmd_wait,
@@ -14,7 +14,7 @@ require(["scenarilo","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenarilo
         "text": cmd_text
     };
     // // import
-    // let scenarilo = new Scenarilo();
+    // let scenario = new scenario();
 
     // init app
     let app = new PIXI.Application(1280,720, {backgroundColor:0xffffff0});
@@ -73,6 +73,23 @@ require(["scenarilo","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenarilo
             }
         }
 
+        var style = new PIXI.TextStyle({
+            fontFamily: '微软雅黑',
+            fontSize: 24,
+            // fontStyle: 'italic',
+            // fontWeight: 'bold',
+            fill: ['#000000', '#000000'], // gradient
+            // stroke: '#4a1850',
+            // strokeThickness: 5,
+            // dropShadow: true,
+            // dropShadowColor: '#000000',
+            // dropShadowBlur: 4,
+            // dropShadowAngle: Math.PI / 6,
+            // dropShadowDistance: 6,
+            wordWrap: true,
+            wordWrapWidth: 600
+        });
+
         dat.gel.text["bg"] = new PIXI.Sprite(PIXI.loader.resources["sys/msgbk.png"].texture);
         dat.ctn.msg.addChild(dat.gel.text.bg);
         dat.gel.text.bg.anchor.set(0.5,1.0);
@@ -83,7 +100,7 @@ require(["scenarilo","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenarilo
         dat.gel.text.basic.y = 720-200;
         dat.ctn.msg.addChild(dat.gel.text.basic);
 
-        dat.curscriptData = scenarilo.analyze(res.curscript.data);
+        dat.curscriptData = scenario.analyze(res.curscript.data);
     }
 
     // text
@@ -121,24 +138,6 @@ require(["scenarilo","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenarilo
     dat.ctn.base.addChild(dat.ctn.fg);
     dat.ctn.msg = new PIXI.Container();
     dat.ctn.base.addChild(dat.ctn.msg);
-
-    var style = new PIXI.TextStyle({
-        fontFamily: '微软雅黑',
-        fontSize: 24,
-        // fontStyle: 'italic',
-        // fontWeight: 'bold',
-        fill: ['#000000', '#000000'], // gradient
-        // stroke: '#4a1850',
-        // strokeThickness: 5,
-        // dropShadow: true,
-        // dropShadowColor: '#000000',
-        // dropShadowBlur: 4,
-        // dropShadowAngle: Math.PI / 6,
-        // dropShadowDistance: 6,
-        wordWrap: true,
-        wordWrapWidth: 600
-    });
-
 
     app.ticker.add(function(delta) {
         // console.log(delta*app.ticker.minFPS);
