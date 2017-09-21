@@ -27,7 +27,7 @@ define(function(){
                 params[rs[1]]=rs[2];
             }
         }
-        let data = {"cmd":cmd, "name":name?name:"", "content":content?content.replace("\\r\\n","\n").replace("\\n","\n"):"", "params":params};
+        let data = {"cmd":cmd, "name":name?name:"", "content":content?content:"", "params":params};
         if (ex){
             for (let k in ex){
                 data[k] = ex[k];

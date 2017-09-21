@@ -30,18 +30,22 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         script_i: 0,
         curLabel: "",
         isText: false,
-        text_si: 0,
-        text_ti: 0,
         textName: "",
-        textContent: "",
-        textInter: 5,
+        textContent: [],
+        textInter: 1,
+        text_pi: 0,
+        text_li: 0,
+        text_i: 0,
+        text_pi_last: 0,
+        text_li_last: 0,
+        text_i_last: 0,
         curLine: null,
         curCmd: null,
         startWaitTime: 0,
         waitTime: 0,
         waitType: "",
         // gel: game elements, they are objects on game displaying or playing.
-        gel: {bg:{}, fg:{}, bgm:{}, se:{}, text:{}},
+        gel: {bg:{}, fg:{}, bgm:{}, se:{}, text:{textset:{}}},
         ctn: {base:null, bg:null, fg:null, msg:null},
     };
 
@@ -74,11 +78,13 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         }
 
         var style = new PIXI.TextStyle({
-            fontFamily: '微软雅黑',
+            fontFamily: '黑体',
             fontSize: 24,
             // fontStyle: 'italic',
             // fontWeight: 'bold',
-            fill: ['#000000', '#000000'], // gradient
+            // fill: ['#000000', '#000000'], // gradient
+            fill: 'black',
+            padding: 4,
             // stroke: '#4a1850',
             // strokeThickness: 5,
             // dropShadow: true,
@@ -86,8 +92,11 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
             // dropShadowBlur: 4,
             // dropShadowAngle: Math.PI / 6,
             // dropShadowDistance: 6,
-            wordWrap: true,
-            wordWrapWidth: 600
+            // wordWrap: true,
+            // wordWrapWidth: 600,
+            // breakWords: true,
+            // trim: true
+            lineHeight: 26
         });
 
         dat.gel.text["bg"] = new PIXI.Sprite(PIXI.loader.resources["sys/msgbk.png"].texture);
@@ -98,6 +107,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         dat.gel.text["basic"] = new PIXI.Text("文字内容\n第二行。", style);
         dat.gel.text.basic.x = (1280-650)/2+25;
         dat.gel.text.basic.y = 720-200;
+        dat.gel.text.textset["basic"] = {fixWidth:0, wrapWidth:600, pageHeight:180};
         dat.ctn.msg.addChild(dat.gel.text.basic);
 
         dat.curscriptData = scenario.analyze(res.curscript.data);
@@ -145,10 +155,15 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         // app.renderer.render(ctn, rt);
 
         if (dat.isText){
-            if (dat.textContent.charAt(dat.text_ti-1)=="\\"){
-                dat.text_ti+=1;
+            let disText = "";
+            for (let li=0; li<=dat.text_li; li++){
+                if (li==dat.text_li){
+                    // last line
+                    disText += dat.textContent[dat.text_pi][li].substring(0,dat.text_i);
+                } else{
+                    disText += dat.textContent[dat.text_pi][li]+"\n";
+                }
             }
-            let disText = dat.textContent.substring(dat.text_si, dat.text_ti);
             dat.gel.text.basic.text = disText;
         }
 

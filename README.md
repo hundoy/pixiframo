@@ -1,5 +1,7 @@
 # pixiframo
 
+没太写过js，感觉写得像翔一样……但也得硬着头皮写，不然一辈子都是翔……
+
 ## todo list
 1.show bg and lh[FIN]
 
