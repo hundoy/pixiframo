@@ -16,15 +16,18 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     // // import
     // let scenario = new scenario();
 
-    // init app
-    let app = new PIXI.Application(1280,720, {backgroundColor:0xffffff0});
-    document.body.appendChild(app.view);
-
-    // Scale mode for all textures, will retain pixelation
-    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+    // util functions
+    var prepareTrans = function(app, dat){
+        let brt = new PIXI.BaseRenderTexture(dat.screenWidth, dat.screenHeight, PIXI.SCALE_MODES.LINEAR, 1);
+        dat.gel.transRt = new PIXI.RenderTexture(brt);
+        dat.gel.transSp = new PIXI.Sprite(dat.gel.transRt);
+        app.stage.addChild(dat.gel.transSp);
+    }
 
     // global varaibles
     let dat = {
+        screenWidth: 1280,
+        screenHeight: 720,
         res:{bg:{},fg:{},sound:{},sys:{}},
         curscriptData: null,
         script_i: 0,
@@ -40,14 +43,29 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         text_li_last: 0,
         text_i_last: 0,
         curLine: null,
+
+        // wait
         curCmd: null,
         startWaitTime: 0,
         waitTime: 0,
         waitType: "",
+
+        // trans
+        isTrans: false,
+        transMethod: "",
+        transParams: {},
+
         // gel: game elements, they are objects on game displaying or playing.
-        gel: {bg:{}, fg:{}, bgm:{}, se:{}, text:{textset:{}}},
+        gel: {bg:{}, fg:{}, bgm:{}, se:{}, text:{textset:{}}, transSp:null, transRt:null},
         ctn: {base:null, bg:null, fg:null, msg:null},
     };
+
+    // init app
+    let app = new PIXI.Application(dat.screenWidth, dat.screenHeight, {backgroundColor:0xffffff0});
+    document.body.appendChild(app.view);
+
+    // Scale mode for all textures, will retain pixelation
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
     // load src
     PIXI.loader.add('curscript', 'scripts/komenco.sn')
@@ -158,9 +176,18 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         // console.log(delta*app.ticker.minFPS);
         // bunny.rotation += Math.PI * delta/app.ticker.FPS;
         // app.renderer.render(ctn, rt);
+        transUpdate(delta);
         textUpdate(delta);
         waitAndProcessUpdate(delta);
     });
+
+    // trans tick update
+    function transUpdate(delta){
+        if (dat.isTrans){
+            app.renderer.render(dat.ctn.base, dat.gel.transRt);
+            dat.gel.transSp.alpha-=
+        }
+    }
 
     // text tick update
     function textUpdate(delta){

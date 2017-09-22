@@ -11,7 +11,16 @@ define(function(){
             dat.ctn.bg.removeChild(dat.gel.bg[0]);
         }
         dat.gel.bg[0] = bg;
+
+        // before change pic
+        
+
+        // change display
         dat.ctn.bg.addChild(bg);
+
+        dat.isTrans = true;
+        dat.waitType = "time";
+        dat.waitTime = 30;
     };
 
     var isEnd = function(app, dat){
