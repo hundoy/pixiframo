@@ -81,7 +81,8 @@ define(function(){
             let lineContent = "";
             for(let i=0; i<line.length; i++){
                 let curWord = line.charAt(i);
-                lineWidth += isDbcCase(curWord) ? wordWidth/2 : wordWidth;
+                lineWidth += isDbcCase(curWord.charCodeAt()) ? wordWidth/2 : wordWidth;
+                //console.log(curWord+" dbc "+isDbcCase(line.charCodeAt(i)));
                 lineContent += curWord;
                 if (lineWidth>=wrapWidth){
                     lineWidth = 0;
