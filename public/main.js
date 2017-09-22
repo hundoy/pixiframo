@@ -32,7 +32,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         isText: false,
         textName: "",
         textContent: [],
-        textInter: 1,
+        textInter: 4,
         text_pi: 0,
         text_li: 0,
         text_i: 0,
@@ -153,8 +153,33 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         // console.log(delta*app.ticker.minFPS);
         // bunny.rotation += Math.PI * delta/app.ticker.FPS;
         // app.renderer.render(ctn, rt);
+        textUpdate(delta);
+        waitAndProcessUpdate(delta);
+    });
 
+    // text tick update
+    function textUpdate(delta){
         if (dat.isText){
+            let curLine = dat.textContent[dat.text_pi][dat.text_li];
+            let curWord = curLine.charAt(dat.text_i-1);
+            let textCmd = "";
+            if (curWord=="\\"){
+                // is text command
+                // skip to the command end and process command.
+                let isCommand = true;
+                while(isCommand){
+                    dat.text_i+=1;
+                    curWord = curLine.charAt(dat.text_i-1);
+                    textCmd+=curWord;
+                    if (curLine.charAt(dat.text_i-2)=="\\" && (dat.text_i==curLine.lenght || curLine.charAt(dat.text_i)!="[")){
+                        // command end without []
+                        isCommand = false;
+                    } else if (curLine.charAt(dat.text_i-1)=="]"){
+                        // command end with []
+                        isCommand = false;
+                    }
+                }
+            }
             let disText = "";
             for (let li=0; li<=dat.text_li; li++){
                 if (li==dat.text_li){
@@ -164,9 +189,17 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
                     disText += dat.textContent[dat.text_pi][li]+"\n";
                 }
             }
-            dat.gel.text.basic.text = disText;
-        }
+            // dat.gel.text.basic.text = disText;
+            dat.gel.text.basic.text = disText.replace(/\\\w\[[^\]]+\]/g, "").replace(/\\\w/g, "");
 
+            if (textCmd.length>0){
+                dat.curCmd.processCmd(app, dat, textCmd);
+            }
+        }
+    }
+
+    // wait and command process tick update
+    function waitAndProcessUpdate(delta){
         if (dat.waitType=="time"){
             if (dat.waitTime<=0){
                 dat.waitType = "";
@@ -176,7 +209,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
                 dat.waitTime-=delta;
             }
         } else if (dat.waitType=="click" || dat.waitType=="forever"){
-            
+
         } else {
             // script process
             if (dat.curscriptData){
@@ -195,8 +228,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
                 }
             }
         }
-
-    });
+    }
 });
 
 

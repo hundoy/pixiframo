@@ -72,38 +72,62 @@ define(function(){
         let pageHeight = dat.gel.text.textset.basic.pageHeight;
         let lineNumPerPage = Math.floor(pageHeight/lineHeight);
         console.log(lineNumPerPage+" lines per page.");
-        let txt = dat.curLine.content;
-        let inputLines = txt.split("\\n");
-        let displayLines = [];
-        for (let line_i in inputLines){
-            let line = inputLines[line_i];
-            let lineWidth = 0;
-            let lineContent = "";
-            for(let i=0; i<line.length; i++){
-                let curWord = line.charAt(i);
-                lineWidth += isDbcCase(curWord.charCodeAt()) ? wordWidth/2 : wordWidth;
-                //console.log(curWord+" dbc "+isDbcCase(line.charCodeAt(i)));
-                lineContent += curWord;
-                if (lineWidth>=wrapWidth){
-                    lineWidth = 0;
-                    displayLines.push(lineContent);
-                    lineContent = "";
-                }
-            }
-            if (lineContent.length>0) displayLines.push(lineContent);
+        let txt = dat.curLine.content.replace(/\\(p|e)/g, "\\p$PAGE$").replace(/\\n/g, "\\n$LINE$");
+
+        // arrange input text to pages/lines array.
+        let inputPages = txt.split("$PAGE$");
+        for (let p in inputPages){
+            let page = inputPages[p];
+            let inputLines = page.split("$LINE$");
+            inputPages[p] = inputLines;
         }
 
+        // iterate input pages/lines to generate text display content 2D array
         let textContent = [];
-        let linesInOnePage = [];
-        while(displayLines.length>0){
-            linesInOnePage.push(displayLines.shift())
-            if (linesInOnePage.length==lineNumPerPage){
-                textContent.push(linesInOnePage);
-                linesInOnePage = [];
+        for (let p in inputPages){
+            let page = inputPages[p];
+            let linesInOnePage = [];
+            for (let line_i in page){
+                let line = page[line_i];
+                let lineWidth = 0;
+                let lineContent = "";
+                let isCommand = false;
+                for(let i=0; i<line.length; i++){
+                    let curWord = line.charAt(i);
+                    if (!isCommand && curWord=="\\"){
+                        // start of text command.
+                        isCommand = true;
+                    } else if (isCommand){
+                        // during text command.
+                        if (line.charAt(i-1)=="\\" && line.charAt(i+1)!="["){
+                            // end of text command, when there is no []
+                            isCommand = false;
+                        } else if (curWord=="]"){
+                            // end of text command, when there is []
+                            isCommand = false;
+                        }
+                    } else {
+                        lineWidth += isDbcCase(curWord.charCodeAt()) ? wordWidth/2 : wordWidth;
+                    }
+                    lineContent += curWord;
+                    if (lineWidth>=wrapWidth){
+                        linesInOnePage.push(lineContent);
+                        lineWidth = 0;
+                        lineContent = "";
+                        if (linesInOnePage.length==lineNumPerPage){
+                            // page full, add one page.
+                            textContent.push(linesInOnePage);
+                            linesInOnePage = [];
+                        }
+                    }
+                }
+                // add left content to a line.
+                if (lineContent.length>0) linesInOnePage.push(lineContent);
             }
-        }
-        if (linesInOnePage.length>0) textContent.push(linesInOnePage);
 
+            // add left lines to a page.
+            if (linesInOnePage.length>0) textContent.push(linesInOnePage);
+        }
 
         // pass to dat
         dat.textName = dat.curLine.name;
@@ -131,10 +155,23 @@ define(function(){
         processAfterWord(app, dat);
     }
 
+    // process text cmd
+    var processCmd = function(app, dat, textCmd){
+        if (textCmd=="l" || textCmd=="p"){
+            // wait click
+            dat.waitType = "click";
+        } else if (textCmd.charAt(0)=='w'){
+            let wt = parseInt(textCmd.substring(2,textCmd.length-1));
+            dat.waitType = "time";
+            dat.waitTime = wt;
+        }
+    }
+
     return {
         process: process,
         isEnd: isEnd,
         afterWait: afterWait,
-        afterClick: afterClick
+        afterClick: afterClick,
+        processCmd: processCmd
     };
 });
