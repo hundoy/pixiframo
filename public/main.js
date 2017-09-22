@@ -140,6 +140,11 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     }
 
     // containers define
+    // stage --
+    //         base --
+    //                 bg
+    //                 fg
+    //                 msg
     dat.ctn.base = new PIXI.Container();
     app.stage.addChild(dat.ctn.base);
     dat.ctn.bg = new PIXI.Container();
