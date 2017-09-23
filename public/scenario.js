@@ -39,7 +39,7 @@ define(function(){
     // methods
     var analyze = function (txt){
         let scriptData = {lines:[]};
-        let lines = txt.split("\n");
+        let lines = txt.replace("\r","").split("\n");
         for (let i in lines){
             let line = lines[i];
             if (line.trim().length==0) continue;
