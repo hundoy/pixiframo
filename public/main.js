@@ -21,7 +21,11 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         let brt = new PIXI.BaseRenderTexture(dat.screenWidth, dat.screenHeight, PIXI.SCALE_MODES.LINEAR, 1);
         dat.gel.transRt = new PIXI.RenderTexture(brt);
         dat.gel.transSp = new PIXI.Sprite(dat.gel.transRt);
+        // dat.gel.transSp.x = 100;
+        // dat.gel.transSp.y = 100;
+        // dat.gel.transSp.alpha = 0.5;
         app.stage.addChild(dat.gel.transSp);
+        app.renderer.render(dat.ctn.base, dat.gel.transRt);
     }
 
     // global varaibles
@@ -52,8 +56,11 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
 
         // trans
         isTrans: false,
+        prepareTrans: prepareTrans,
         transMethod: "",
         transParams: {},
+        transTime: 0,
+        transWaitTime: 0,
 
         // gel: game elements, they are objects on game displaying or playing.
         gel: {bg:{}, fg:{}, bgm:{}, se:{}, text:{textset:{}}, transSp:null, transRt:null},
@@ -184,8 +191,18 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     // trans tick update
     function transUpdate(delta){
         if (dat.isTrans){
-            app.renderer.render(dat.ctn.base, dat.gel.transRt);
-            dat.gel.transSp.alpha-=
+            dat.gel.transSp.alpha = dat.transWaitTime/dat.transTime;
+
+            if (dat.transWaitTime<=0){
+                dat.transWaitTime = 0;
+                dat.transTime = 0;
+
+                dat.isTrans = false;
+                // remove trans pic
+                app.stage.removeChild(dat.gel.transSp);
+            }
+
+            dat.transWaitTime -= delta;
         }
     }
 

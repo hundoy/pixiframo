@@ -2,6 +2,12 @@
 bg 1
 lh 1 pos=la f=smile
 lh 2 pos=ra f=nm
+ld: background switch.
+bg 2
+ld: background switch again.
+bg 1
+ld: wowow
+
 ld: 开始\l\n等待\w[30]\n准备。
 jav: 留存的需求：\n调整留存报表，\p应用注册留存，也把客户放在上面，\l用户放在下面，\l或者和其他报表一样，改成按钮方式。\l\p两个都有的情况下，默认显示客户。\e修改了“数据仪表盘”模块中对报表类型的限制，使其支持tableau以外的报表嵌入。\n根据《北京市财政局关于2012年会计从业资格无纸化考试（扩大试点）的通知》，\n报考人员应于考试期间如遇国家法定节假日调休占用的双休日不安排考试，考试时间顺延。\n具体考试时间以准考证上打印的时间为准。
 wait click
