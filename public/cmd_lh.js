@@ -27,9 +27,22 @@ define(function(){
         if (dat.gel.fg[curLine.name]){
             lh = dat.gel.fg[curLine.name];
         } else {
+            if (PIXI.loader.resources)
+
+            let clothes = "nor";
+            let action = "stand";
             let url = dat.res.fg[curLine.name];
-            let lhSp = new PIXI.Sprite(PIXI.loader.resources[url].texture);
-            lh = genLh(lhSp, curLine.name, params);
+            let tex = PIXI.loader.resources[url].texture;
+            let lhSp;
+            if (tex.indexOf(".json")){
+                // tex is atlas, advanced lh
+                let lhSp = new PIXI.Sprite(tex[curLine.name+"_base"]);
+                lh = genLh(lhSp, curLine.name, params);
+            } else {
+                // tex is png, simple lh
+                let lhSp = new PIXI.Sprite(tex);
+                lh = genLh(lhSp, curLine.name, params);
+            }
         }
         
         // set position
