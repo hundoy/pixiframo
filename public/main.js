@@ -7,14 +7,13 @@ require.config({
 });
 
 require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, cmd_bg, cmd_lh, cmd_wait, cmd_text){
+    // register cmd
     let cmds={
         "bg": cmd_bg,
         "wait": cmd_wait,
         "lh": cmd_lh,
         "text": cmd_text
     };
-    // // import
-    // let scenario = new scenario();
 
     // util functions
     var prepareTrans = function(app, dat){
@@ -77,7 +76,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     // load src
     PIXI.loader.add('curscript', 'scripts/komenco.sn')
         .add(["bg/bg_1.png","bg/bg_2.png","bg/bg_7home.jpg","bg/bg_alleynight.jpg","bg/bg_office.jpg"])
-        .add(["fg/lh_1.png","fg/lh_2.png","fg/lh_nd.png","fg/lh_gg.png","fg/lh_ai.png"])
+        .add(["fg/lh_1.png","fg/lh_2.png","fg/lh_nd.png","fg/lh_gg.png","fg/lh_ai.png", "fg/lh_psdexample.json"])
         .add(["sys/msgbk.png"])
     // .on("process", onLoading)
         .load(afterLoad);
