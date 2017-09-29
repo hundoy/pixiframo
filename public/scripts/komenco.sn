@@ -1,7 +1,7 @@
 #open|open scene of this
 bg 1
 lh 1 pos=la f=smile
-lh 2 pos=ra f=nm
+lh test pos=ra f=cry
 ld: background switch.
 bg 2
 ld: background switch again.

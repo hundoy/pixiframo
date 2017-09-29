@@ -27,20 +27,19 @@ define(function(){
         if (dat.gel.fg[curLine.name]){
             lh = dat.gel.fg[curLine.name];
         } else {
-            if (PIXI.loader.resources)
-
             let clothes = "nor";
             let action = "stand";
-            let url = dat.res.fg[curLine.name];
-            let tex = PIXI.loader.resources[url].texture;
+            let url = dat.res.fg["lh_"+curLine.name+"_"+clothes];
+
             let lhSp;
-            if (tex.indexOf(".json")){
-                // tex is atlas, advanced lh
-                let lhSp = new PIXI.Sprite(tex[curLine.name+"_base"]);
+            if (url.indexOf(".json")>-1){
+                // atlas
+                lhSp = new PIXI.Sprite(PIXI.Texture.fromFrame("lh_"+curLine.name+"_"+clothes+"_"+action+"_base.png"));
                 lh = genLh(lhSp, curLine.name, params);
             } else {
-                // tex is png, simple lh
-                let lhSp = new PIXI.Sprite(tex);
+                // single png
+                let tex = PIXI.loader.resources[url].texture
+                lhSp = new PIXI.Sprite(tex);
                 lh = genLh(lhSp, curLine.name, params);
             }
         }

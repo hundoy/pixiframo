@@ -76,7 +76,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     // load src
     PIXI.loader.add('curscript', 'scripts/komenco.sn')
         .add(["bg/bg_1.png","bg/bg_2.png","bg/bg_7home.jpg","bg/bg_alleynight.jpg","bg/bg_office.jpg"])
-        .add(["fg/lh_1.png","fg/lh_2.png","fg/lh_nd.png","fg/lh_gg.png","fg/lh_ai.png", "fg/lh_test_nor.json"])
+        .add(["fg/lh_1_nor.png","fg/lh_2_nor.png","fg/lh_nd.png","fg/lh_gg.png","fg/lh_ai.png", "fg/lh_test_nor.json"])
         .add(["sys/msgbk.png"])
     // .on("process", onLoading)
         .load(afterLoad);
