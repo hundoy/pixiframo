@@ -38,12 +38,14 @@ else:
     for oldfile in oldfiles:
         os.remove(dir_name+oldfile)
 
+lh_info = {}
+
 for action in actionArr:
     filename = prefix+"_"+action
     print(filename)
     psd = PSDImage.load(filename + ".psd")
 
-    lh_info = {"faceRectX": 0, "faceRectY": 0}
+    lh_action_info = {"faceRectX": 0, "faceRectY": 0}
 
     # create an image with the whole psd size as the base_lh
     lh_img = Image.new("RGBA", (psd.bbox.width, psd.bbox.height), (255, 255, 255, 0))
@@ -76,17 +78,19 @@ for action in actionArr:
         elif name == 'lh_base':
             print name
             lh_box = layer.bbox
-            lh_info["faceRectX"] = face_rect.bbox.x1
-            lh_info["faceRectY"] = face_rect.bbox.y1
+            lh_action_info["faceRectX"] = face_rect.bbox.x1
+            lh_action_info["faceRectY"] = face_rect.bbox.y1
             lh_layer_image = layer.as_PIL()
             lh_img.paste(lh_layer_image, (lh_box.x1, lh_box.y1, lh_box.x2, lh_box.y2))
             lh_img.save("%s%s_base.png" % (dir_name, filename))
+            lh_info[filename] = lh_action_info
 
-            with open("%s%s_info.json" % (dir_name, filename), 'w') as of:
-                of.write(json.dumps(lh_info))
+
 
     print("Fin process of %s !" % filename)
 
-
+# save lh info
+with open("%s%s_info.json" % (dir_name, prefix), 'w') as of:
+    of.write(json.dumps(lh_info))
 
 print "end"
