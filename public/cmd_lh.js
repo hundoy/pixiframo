@@ -1,8 +1,38 @@
 // cmd_lh.js
 define(function(){
     // private
-    function genLh(lhSp, name, params){
-        return {lhSp:lhSp, name:name, pos:params.pos, f:params.f};
+    function genLh(dat){
+        let curLine = dat.curLine;
+        let lh = {lhSp:null, name:curLine.name, params:curLine.params};
+
+        lh.clothes = "nor";
+        lh.action = "stand";
+        let baseName = "lh_"+lh.name+"_"+lh.clothes;
+        let url = dat.res.fg[baseName];
+
+        if (url.indexOf(".json")>-1){
+            // atlas
+            lh.lhSp = new PIXI.Sprite(PIXI.Texture.fromFrame(baseName+"_"+lh.action+"_base.png"));
+            lh.faceSp = new PIXI.Sprite(PIXI.Texture.fromFrame(baseName+"_"+lh.action+"_"+lh.params.f+".png"))
+            lh.lhInfo = dat.res.fg[baseName+"_info"][baseName+"_"+lh.action];
+            // add face
+            lh.faceSp.anchor.set(0, 0);
+            lh.faceSp.x = lh.lhInfo.faceRectX;
+            lh.faceSp.y = lh.lhInfo.faceRectY;
+            lh.lhSp.addChild(lh.faceSp);
+        } else {
+            // single png
+            let tex = PIXI.loader.resources[url].texture
+            lh.lhSp = new PIXI.Sprite(tex);
+        }
+
+        // set base lh position
+        let posxy = getPos(lh.params.pos);
+        lh.lhSp.anchor.set(0.5, 1.0);
+        lh.lhSp.x=posxy[0];
+        lh.lhSp.y=posxy[1];
+
+        return lh;
     }
 
     function getPos(posstr){
@@ -24,31 +54,14 @@ define(function(){
 
         let lh = null;
         let params = curLine.params;
+
         if (dat.gel.fg[curLine.name]){
+            // use existed lh
             lh = dat.gel.fg[curLine.name];
         } else {
-            let clothes = "nor";
-            let action = "stand";
-            let url = dat.res.fg["lh_"+curLine.name+"_"+clothes];
-
-            let lhSp;
-            if (url.indexOf(".json")>-1){
-                // atlas
-                lhSp = new PIXI.Sprite(PIXI.Texture.fromFrame("lh_"+curLine.name+"_"+clothes+"_"+action+"_base.png"));
-                lh = genLh(lhSp, curLine.name, params);
-            } else {
-                // single png
-                let tex = PIXI.loader.resources[url].texture
-                lhSp = new PIXI.Sprite(tex);
-                lh = genLh(lhSp, curLine.name, params);
-            }
+            // create lh
+            lh = genLh(dat);
         }
-        
-        // set position
-        let posxy = getPos(params.pos);
-        lh.lhSp.anchor.set(0.5, 1.0);
-        lh.lhSp.x=posxy[0];
-        lh.lhSp.y=posxy[1];
 
         dat.ctn.fg.addChild(lh.lhSp);
         dat.gel.fg[curLine.name] = lh;

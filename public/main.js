@@ -76,7 +76,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     // load src
     PIXI.loader.add('curscript', 'scripts/komenco.sn')
         .add(["bg/bg_1.png","bg/bg_2.png","bg/bg_7home.jpg","bg/bg_alleynight.jpg","bg/bg_office.jpg"])
-        .add(["fg/lh_1_nor.png","fg/lh_2_nor.png","fg/lh_nd.png","fg/lh_gg.png","fg/lh_ai.png", "fg/lh_test_nor.json"])
+        .add(["fg/lh_1_nor.png","fg/lh_2_nor.png","fg/lh_nd.png","fg/lh_gg.png","fg/lh_ai.png", "fg/lh_test_nor.json", "fg/lh_test_nor_info.json"])
         .add(["sys/msgbk.png"])
     // .on("process", onLoading)
         .load(afterLoad);
@@ -97,7 +97,13 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         for (let url in res){
             if (fgreg.test(url)){
                 let rs = fgreg.exec(url);
-                dat.res.fg[rs[1]] = url;
+                if (url.indexOf("_info.json")>-1){
+                    // pic info, save data json
+                    dat.res.fg[rs[1]] = res[url].data;
+                } else {
+                    // pic or atlas, save url.
+                    dat.res.fg[rs[1]] = url;
+                }
             }
         }
 
@@ -135,6 +141,16 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         dat.ctn.msg.addChild(dat.gel.text.basic);
 
         dat.curscriptData = scenario.analyze(res.curscript.data);
+
+        // let basesp = new PIXI.Sprite(PIXI.Texture.fromFrame("lh_test_nor_hug_base.png"));
+        // let facesp = new PIXI.Sprite(PIXI.Texture.fromFrame("lh_test_nor_hug_normal.png"));
+        // let base2 = new PIXI.Container();
+        // let fg2 = new PIXI.Container();
+        // facesp.x=100;
+        // facesp.y=100;
+        // basesp.x = 200;
+        // basesp.addChild(facesp);
+        // fg2.addChild(basesp);
     }
 
     // text

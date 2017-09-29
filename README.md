@@ -6,7 +6,7 @@
 1.show bg and lh[FIN]
 bg default trans.[FIN]
 bg advanced trans.
-lh atlas and lh atlas generator.
+lh atlas and lh atlas generator.[FIN]
 lh trans.
 
 2.show text and basic text effect[FIN]

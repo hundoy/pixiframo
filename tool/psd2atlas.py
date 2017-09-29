@@ -78,8 +78,8 @@ for action in actionArr:
         elif name == 'lh_base':
             print name
             lh_box = layer.bbox
-            lh_action_info["faceRectX"] = face_rect.bbox.x1
-            lh_action_info["faceRectY"] = face_rect.bbox.y1
+            lh_action_info["faceRectX"] = face_rect.bbox.x1-psd.bbox.width/2
+            lh_action_info["faceRectY"] = face_rect.bbox.y1-psd.bbox.height
             lh_layer_image = layer.as_PIL()
             lh_img.paste(lh_layer_image, (lh_box.x1, lh_box.y1, lh_box.x2, lh_box.y2))
             lh_img.save("%s%s_base.png" % (dir_name, filename))

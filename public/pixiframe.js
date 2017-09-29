@@ -34,12 +34,12 @@ var sp1 = new PIXI.Sprite(tex1);
 var sp2 = new PIXI.Sprite(tex1);
 var sp3 = new PIXI.Sprite(tex1);
 var ctn = new PIXI.Container();
-sp1.position.set(0,0);
+sp1.position.set(30,30);
 sp2.position.set(12,12);
-sp3.position.set(24,24);
+sp3.position.set(24,44);
 ctn.addChild(sp1);
-ctn.addChild(sp2);
-ctn.addChild(sp3);
+sp1.addChild(sp2);
+sp1.addChild(sp3);
 ctn.alpha = 1.0;
 
 app.stage.addChild(ctn);
