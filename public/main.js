@@ -225,7 +225,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     function textUpdate(delta){
         if (dat.isText){
             let curLine = dat.textContent[dat.text_pi][dat.text_li];
-            let curWord = curLine.charAt(dat.text_i-1);
+            let curWord = curLine.charAt(dat.text_i);
             let textCmd = "";
             if (curWord=="\\"){
                 // is text command
@@ -233,12 +233,12 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
                 let isCommand = true;
                 while(isCommand){
                     dat.text_i+=1;
-                    curWord = curLine.charAt(dat.text_i-1);
+                    curWord = curLine.charAt(dat.text_i);
                     textCmd+=curWord;
-                    if (curLine.charAt(dat.text_i-2)=="\\" && (dat.text_i==curLine.lenght || curLine.charAt(dat.text_i)!="[")){
+                    if (curLine.charAt(dat.text_i-1)=="\\" && (dat.text_i==curLine.length || curLine.charAt(dat.text_i+1)!="[")){
                         // command end without []
                         isCommand = false;
-                    } else if (curLine.charAt(dat.text_i-1)=="]"){
+                    } else if (curLine.charAt(dat.text_i)=="]"){
                         // command end with []
                         isCommand = false;
                     }
@@ -248,7 +248,7 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
             for (let li=0; li<=dat.text_li; li++){
                 if (li==dat.text_li){
                     // last line
-                    disText += dat.textContent[dat.text_pi][li].substring(0,dat.text_i);
+                    disText += dat.textContent[dat.text_pi][li].substring(0,dat.text_i+1);
                 } else{
                     disText += dat.textContent[dat.text_pi][li]+"\n";
                 }
