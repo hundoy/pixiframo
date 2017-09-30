@@ -62,8 +62,8 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
         transWaitTime: 0,
 
         // gel: game elements, they are objects on game displaying or playing.
-        gel: {bg:{}, fg:{}, bgm:{}, se:{}, text:{textset:{}}, transSp:null, transRt:null},
-        ctn: {base:null, bg:null, fg:null, msg:null},
+        gel: {bg:{}, lh:{}, bgm:{}, se:{}, text:{textset:{}}, transSp:null, transRt:null},
+        ctn: {base:null, bg:null, lh:null, lhs:{}, msg:null},
     };
 
     // init app
@@ -183,14 +183,14 @@ require(["scenario","cmd_bg","cmd_lh","cmd_wait","cmd_text"],function(scenario, 
     // stage --
     //         base --
     //                 bg
-    //                 fg
+    //                 lh - lhs
     //                 msg
     dat.ctn.base = new PIXI.Container();
     app.stage.addChild(dat.ctn.base);
     dat.ctn.bg = new PIXI.Container();
     dat.ctn.base.addChild(dat.ctn.bg);
-    dat.ctn.fg = new PIXI.Container();
-    dat.ctn.base.addChild(dat.ctn.fg);
+    dat.ctn.lh = new PIXI.Container();
+    dat.ctn.base.addChild(dat.ctn.lh);
     dat.ctn.msg = new PIXI.Container();
     dat.ctn.base.addChild(dat.ctn.msg);
 
