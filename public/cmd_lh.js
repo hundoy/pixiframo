@@ -1,38 +1,101 @@
 // cmd_lh.js
 define(function(){
     // private
-    function genLh(dat){
-        let curLine = dat.curLine;
-        let lh = {name:curLine.name, params:curLine.params};
+    function processLh(dat, lh, lhctn){
+        // 1. lh is original lh ele.(if new, it's a {}.
+        // 2. dat.curLine.params contain current lh info.
+        // compare 1 and 2, change the diffent parts.(clothes, action or face)
+        let params = dat.curLine.params;
+        if (!("lhSp" in lh)){
+            // new lh
+            lh.name = dat.curLine.name;
+            lh.clothes = "c" in params ? params.c : "nor";
+            lh.action = "a" in params ? params.a : "stand";
+            if ("f" in params) lh.face = params.f;
 
-        lh.clothes = "nor";
-        lh.action = "stand";
-        let baseName = "lh_"+lh.name+"_"+lh.clothes;
-        let url = dat.res.fg[baseName];
+            let clhName = "lh_"+lh.name+"_"+lh.clothes;
+            let alhName = clhName + "_" + lh.action;
+            let url = dat.res.fg[clhName];
 
-        if (url.indexOf(".json")>-1){
-            // atlas
-            lh.lhSp = new PIXI.Sprite(PIXI.Texture.fromFrame(baseName+"_"+lh.action+"_base.png"));
-            lh.faceSp = new PIXI.Sprite(PIXI.Texture.fromFrame(baseName+"_"+lh.action+"_"+lh.params.f+".png"))
-            lh.lhInfo = dat.res.fg[baseName+"_info"][baseName+"_"+lh.action];
-            lh.faceSp.anchor.set(0, 0);
-            lh.faceSp.x = lh.lhInfo.faceRectX;
-            lh.faceSp.y = lh.lhInfo.faceRectY;
+            if (url.indexOf(".json")>-1){
+                // advanced lh
+                lh.lhSp = new PIXI.Sprite(PIXI.Texture.fromFrame(alhName+"_base.png"));
+                lh.faceSp = new PIXI.Sprite(PIXI.Texture.fromFrame(alhName+"_"+params.f+".png"))
+                lh.lhInfo = dat.res.fg[clhName+"_info"][alhName];
+                lh.faceSp.anchor.set(0, 0);
+                lh.faceSp.position.set(lh.lhInfo.faceRectX, lh.lhInfo.faceRectY);
+            } else {
+                // single pic lh
+                let tex = PIXI.loader.resources[url].texture
+                lh.lhSp = new PIXI.Sprite(tex);
+            }
+
+            // lh position
+            lh.pivotx = 0.5 * lh.lhSp.width;
+            lh.pivoty = 1.0 * lh.lhSp.height;
+            let posxy = getPos(params.pos);
+            lh.x = posxy[0];
+            lh.y = posxy[1];
+
+            // add to container
+            lhctn.addChild(lh.lhSp);
+            if (lh.faceSp){
+                lhctn.addChild(lh.faceSp);
+            }
+            lhctn.pivot.set(lh.pivotx, lh.pivoty);
+            lhctn.position.set(lh.x, lh.y);
+            dat.ctn.lh.addChild(lhctn);
+            dat.gel.lh[dat.curLine.name] = lh;
         } else {
-            // single png
-            let tex = PIXI.loader.resources[url].texture
-            lh.lhSp = new PIXI.Sprite(tex);
-        }
+            // change old lh
+            let isChangeBaseLh = false;
+            if ("c" in params && params.c!=lh.clothes){
+                // change clothes
+                lh.clothes = params.c;
+                isChangeBaseLh = true;
+            }
 
-        // set base lh position
-        let posxy = getPos(lh.params.pos);
-        // lh.lhSp.anchor.set(0.5, 1.0);
-        // lh.lhSp.x=posxy[0];
-        // lh.lhSp.y=posxy[1];
-        lh.pivotx = 0.5 * lh.lhSp.width;
-        lh.pivoty = 1.0 * lh.lhSp.height;
-        lh.x = posxy[0];
-        lh.y = posxy[1];
+            if ("a" in params && params.a!=lh.action){
+                // change action
+                lh.action = params.a;
+                isChangeBaseLh = true;
+            }
+
+            let clhName = "lh_"+lh.name+"_"+lh.clothes;
+            let alhName = clhName + "_" + lh.action;
+
+            if (isChangeBaseLh){
+                lhctn.removeChild(lh.lhSp);
+                lh.lhSp.destroy();
+                lh.lhSp = new PIXI.Sprite(PIXI.Texture.fromFrame(alhName+"_base.png"));
+                lh.pivotx = 0.5 * lh.lhSp.width;
+                lh.pivoty = 1.0 * lh.lhSp.height;
+                lhctn.addChild(lh.lhSp);
+            }
+
+            // only advanced lh need face change, skip single pic lh's face change.
+            if ("face" in lh && "f" in params && params.f!=lh.face){
+                // change face.
+                lhctn.removeChild(lh.faceSp);
+                lh.faceSp.destroy();
+                lh.faceSp = new PIXI.Sprite(PIXI.Texture.fromFrame(alhName+"_"+params.f+".png"))
+                lh.lhInfo = dat.res.fg[clhName+"_info"][alhName];
+                lh.faceSp.anchor.set(0, 0);
+                lh.faceSp.x = lh.lhInfo.faceRectX;
+                lh.faceSp.y = lh.lhInfo.faceRectY;
+                lhctn.addChild(lh.faceSp);
+            }
+
+            // change pos
+            if ("pos" in params){
+                let posxy = getPos(params.pos);
+                lh.x = posxy[0];
+                lh.y = posxy[1];
+                lhctn.position.set(lh.x, lh.y);
+            }
+
+            dat.gel.lh[dat.curLine.name] = lh;
+        }
 
         return lh;
     }
@@ -62,20 +125,12 @@ define(function(){
             lhctn = dat.ctn.lhs[lhname];
         } else {
             // create lh and container
-            lh = genLh(dat);
+            lh = {};
             lhctn = new PIXI.Container();
             dat.ctn.lhs[lhname] = lhctn;
         }
 
-        // add to container
-        lhctn.addChild(lh.lhSp);
-        if (lh.faceSp){
-            lhctn.addChild(lh.faceSp);
-        }
-        lhctn.pivot.set(lh.pivotx, lh.pivoty);
-        lhctn.position.set(lh.x, lh.y);
-        dat.ctn.lh.addChild(lhctn);
-        dat.gel.lh[lhname] = lh;
+        lh = processLh(dat, lh, lhctn);
     };
 
     var isEnd = function(app, dat){

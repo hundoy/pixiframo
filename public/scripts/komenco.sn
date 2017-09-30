@@ -2,7 +2,11 @@
 bg 1
 lh 1 pos=la
 lh test pos=ra f=cry
-ld: background switch.
+ld: i cry.最后一个字
+lh test pos=ra f=normal
+ld: i normal
+lh test pos=ra f=normal a=hug
+ld: i hug
 bg 2
 ld: background switch again.
 bg 1
